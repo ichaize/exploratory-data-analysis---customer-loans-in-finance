@@ -43,7 +43,6 @@ class RDSDatabaseConnector:
         ''' Extracts data from an RDS database
         
             Args:
-                connector (RDSDatabaseConnector): an instance of the RDSDatabaseConnector class
                 table_name (str): the name of the RDS table to be extracted
                 
             Returns:
@@ -54,9 +53,27 @@ class RDSDatabaseConnector:
         return table
     
     def save_as_csv(self, table_name):
+        ''' Creates a csv.file containing the extracted data
+        
+            Args:
+                table_name (str): the name of the RDS table the data is taken from
+        '''
         table = self.read_rds_table(table_name)
         table.to_csv("loan_payments.csv")
 
+    def load_as_df(self, csv_file):
+        ''' Loads the data from the locally saved csv file into a dataframe
+        
+            Args:
+                csv_file (str): the name of the file where the data is stored
+            
+            Returns:
+                pandas.Dataframe
+        '''
+        df = pd.read_csv(csv_file)
+        return df
+
 connector = RDSDatabaseConnector("credentials.yaml")
-loan_payments = connector.save_as_csv("loan_payments")
-print(loan_payments)
+loans_df = connector.load_as_df("loan_payments.csv")
+print(loans_df.shape)
+
