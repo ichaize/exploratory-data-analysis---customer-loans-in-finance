@@ -1,6 +1,7 @@
+import pandas as pd
 import yaml
 from sqlalchemy import create_engine
-import pandas as pd
+
 
 class RDSDatabaseConnector:
 
@@ -73,7 +74,16 @@ class RDSDatabaseConnector:
         df = pd.read_csv(csv_file)
         return df
 
+    def upload_to_db(self, df, table):
+        '''Uploads the cleaned data to the local SQL database
+        
+           Args:
+                df (pandas.Dataframe): the dataframe to be uploaded
+                table (str): the name of the table to create in the SQL database
+        '''
+        engine = self.init_db_engine()
+        df.to_sql(table, engine, if_exists="replace")
+
 connector = RDSDatabaseConnector("credentials.yaml")
 loans_df = connector.load_as_df("loan_payments.csv")
-print(loans_df.shape)
 
