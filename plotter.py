@@ -1,6 +1,6 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
-from db_utils import loans_df 
+# from db_utils import loans_df 
 from data_transforms import converted_loans_df
 
 class Plotter:
@@ -39,12 +39,22 @@ class Plotter:
         sns.regplot(x=means.index, y=means)
         plt.show()
 
+    def heatmap(self):
+        self.table = self.table.dropna()
+        numerical = self.table.select_dtypes(include=["number"])
+        corr = numerical.corr()
+        plt.subplots(figsize=(20,15))
+        sns.heatmap(corr, annot=True, linewidths=.5)
+        plt.show()
+
 loans_plotter = Plotter(converted_loans_df)
 # loans_plotter.view_histogram("employment_length")
 # loans_plotter.view_boxplot("funded_amount")
 # loans_plotter.view_correlation("last_payment_date", "loan_amount")
 # loans_plotter.facet("last_payment_date")
 # original_loans_plotter = Plotter(loans_df)
-loans_plotter.regplot("last_payment_date", "loan_amount")
+# loans_plotter.regplot("last_payment_date", "issue_date")
+loans_plotter.heatmap()
+# corr_plotter.scatterplot("last_payment_date", "last_credit_pull_date")
 
     

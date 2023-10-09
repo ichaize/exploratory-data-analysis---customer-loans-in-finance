@@ -1,13 +1,10 @@
 from data_transforms import converted_loans_df
-# from db_utils import loans_df
+# from db_utils import original_loans_df
 import pandas as pd
 import numpy as np
 from scipy import stats
-from scipy.stats import f_oneway
-from scipy.stats import ttest_ind
 
 loans_df = converted_loans_df
-print(loans_df["last_payment_date"].dtype)
 
 class DataFrameInfo:
 
@@ -52,38 +49,12 @@ class DataFrameInfo:
     
     def unique_values(self, table, col):
         print(table[col].unique())
-    
-    # def anova(self, table, cat_col, num_col):
-    #     table.dropna(subset=[cat_col, num_col], inplace=True)
-    #     category_group_list=table.groupby(cat_col, observed=True)[num_col].apply(list)
-    #     anova_result = stats.f_oneway(*category_group_list)
-    #     print(anova_result)
-    #     if anova_result[1] > 0.05:
-    #         print(f"There is no correlation between {cat_col} and {num_col}")
-    #     else: 
-    #         print(f"There is correlation between {cat_col} and {num_col}: the p-value is {anova_result[1]}")
-
-    def pearson_series_correlation(self, table, col1, col2):
-        print(table[col1].corr(table[col2]))
-
-    def pearson_df_correlation(self, table, col1):
-        numeric_cols = table.select_dtypes(include=["int64", "float64"])
-        for col in numeric_cols:
-            print(table[col].corr(table[col1]))
 
     def get_categories(self, table, col):
         print(table[col].cat.categories)
 
-    def test_missing_at_random(self, table, col1, col2):
-        nulls = table[table[col1].isnull()]
-        non_nulls = table[~table[col1].isnull()]
-        print(nulls[col2].mean())
-        print(non_nulls[col2].mean())
-        t_test_result = ttest_ind(nulls[col2], non_nulls[col2], nan_policy="omit")
-        if t_test_result[1] < 0.05:
-            print(f"The p-value is {t_test_result[1]}: the missing data is unlikely to be missing at random")
-        else: 
-            print(f"The p-value is {t_test_result[1]}: the missing data is probably missing at random")
+    
+
             
 
     
@@ -96,7 +67,43 @@ info_getter = DataFrameInfo()
 # info_getter.count_nulls(loans_df)
 # info_getter.get_col_stats(loans_df, "last_payment_date")
 # info_getter.unique_values(loans_df, "last_payment_date")
-# info_getter.pearson_series_correlation(loans_df, "employment_codes", "annual_inc")
+# info_getter.pearson_series_correlation(loans_df, "last_payment_date", "loan_amount")
 # info_getter.get_categories(loans_df, "employment_length")
-# info_getter.pearson_df_correlation(loans_df, "employment_codes")
-# info_getter.test_missing_at_random(loans_df, "last_payment_date", "funded_amount")
+# info_getter.pearson_df_correlation(loans_df)
+# info_getter.test_missing_at_random(loans_df, "last_payment_date", "loan_amount")
+
+
+
+
+    # def anova(self, table, cat_col, num_col):
+    #     table.dropna(subset=[cat_col, num_col], inplace=True)
+    #     category_group_list=table.groupby(cat_col, observed=True)[num_col].apply(list)
+    #     anova_result = stats.f_oneway(*category_group_list)
+    #     print(anova_result)
+    #     if anova_result[1] > 0.05:
+    #         print(f"There is no correlation between {cat_col} and {num_col}")
+    #     else: 
+    #         print(f"There is correlation between {cat_col} and {num_col}: the p-value is {anova_result[1]}")
+
+    # def pearson_series_correlation(self, table, col1, col2):
+    #     print(table[col1].corr(table[col2]))
+
+    # def pearson_df_correlation(self, table):
+    #     table = table.astype("category")
+    #     print(table.corr())
+        # numeric_cols = table.select_dtypes(include=["int64", "float64"])
+        # for col in table.columns:
+        #     print(table[col].corr(table[col1]))
+
+   
+
+    # def test_missing_at_random(self, table, col1, col2):
+    #     nulls = table[table[col1].isnull()]
+    #     non_nulls = table[~table[col1].isnull()]
+    #     print(nulls[col2].mean())
+    #     print(non_nulls[col2].mean())
+    #     t_test_result = ttest_ind(nulls[col2], non_nulls[col2], nan_policy="omit")
+    #     if t_test_result[1] < 0.05:
+    #         print(f"The p-value is {t_test_result[1]}: the missing data is unlikely to be missing at random")
+    #     else: 
+    #         print(f"The p-value is {t_test_result[1]}: the missing data is probably missing at random")

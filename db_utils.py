@@ -85,5 +85,5 @@ class RDSDatabaseConnector:
         df.to_sql(table, engine, if_exists="replace")
 
 connector = RDSDatabaseConnector("credentials.yaml")
-loans_df = connector.load_as_df("loan_payments.csv")
+original_loans_df = connector.load_as_df("loan_payments.csv")
 
