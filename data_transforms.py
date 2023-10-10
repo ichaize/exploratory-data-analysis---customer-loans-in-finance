@@ -125,6 +125,11 @@ class DataTransformer:
         table = self.convert_to_float(table, cat_cols)
         return table
     
+    def sqrt_transform(self, table):
+        for col in table.columns:
+            pass
+
+
    
 
 

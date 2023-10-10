@@ -53,11 +53,21 @@ class DataFrameInfo:
     def get_categories(self, table, col):
         print(table[col].cat.categories)
 
-    
-
-            
-
-    
+    def identify_skewness(self, table):
+        skew = table.skew(numeric_only=True)
+        skewed_dict = {}
+        skewed_list = []
+        for col in skew.index:
+            value = skew.loc[col]
+            if value >= 0.5:
+                skewed_dict.update({col: value})
+            else:
+                pass
+        for key in skewed_dict:
+            skewed_list.append(key)
+            print(f"{key}: {skewed_dict[key]}")    
+        skewed_cols = table[skewed_list]
+        return skewed_cols
 
 
 info_getter = DataFrameInfo()
@@ -71,7 +81,8 @@ info_getter = DataFrameInfo()
 # info_getter.get_categories(loans_df, "employment_length")
 # info_getter.pearson_df_correlation(loans_df)
 # info_getter.test_missing_at_random(loans_df, "last_payment_date", "loan_amount")
-
+skewed_columns = info_getter.identify_skewness(loans_df)
+print(skewed_columns.head())
 
 
 
