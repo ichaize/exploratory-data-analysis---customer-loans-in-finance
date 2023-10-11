@@ -1,8 +1,6 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
-# from db_utils import loans_df 
-from data_transforms import converted_loans_df
-from dataframe_info import skewed_columns
+
 
 
 class Plotter:
@@ -52,13 +50,13 @@ class Plotter:
         sns.heatmap(corr, annot=True, linewidths=.5)
         plt.show()
 
-loans_plotter = Plotter()
+# loans_plotter = Plotter()
 # loans_plotter.view_histogram(converted_loans_df, "employment_length")
 # loans_plotter.view_boxplot(converted_loans_df, "funded_amount")
 # loans_plotter.view_correlation(converted_loans_df, "last_payment_date", "loan_amount")
 # loans_plotter.facet(converted_loans_df, "last_payment_date")
 # loans_plotter.regplot(converted_loans_df, "last_payment_date", "issue_date")
 # loans_plotter.heatmap(converted_loans_df)
-loans_plotter.multiple_histograms(skewed_columns)
+# loans_plotter.multiple_histograms(skewed_columns)
 
     

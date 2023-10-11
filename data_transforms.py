@@ -1,27 +1,24 @@
 import pandas as pd
-from db_utils import original_loans_df
 from sklearn.preprocessing import LabelEncoder
+import numpy as np
+from scipy import stats
 
-
-original_loans_df.drop("Unnamed: 0", axis=1, inplace=True)
-
-to_float = ["loan_amount"]
 to_cat = ["grade", "home_ownership", "verification_status", "loan_status", "purpose", "sub_grade"]
-to_bool = ["payment_plan"]
-to_int = ["collections_12_mths_ex_med"]
-to_drop = ["mths_since_last_major_derog", "next_payment_date", "mths_since_last_record", "mths_since_last_delinq", "application_type", "policy_code"] # application type and policy code both only have one value so are a bit poiintless
-dates_to_clean = ["last_payment_date", "issue_date", "earliest_credit_line", "last_credit_pull_date"]
 cat_cols = ["grade_cats", "home_ownership_cats", "verification_status_cats", "loan_status_cats", "purpose_cats", "sub_grade_cats"]
-nulls_to_drop = ["last_payment_date", "last_credit_pull_date", "collections_12_mths_ex_med"]
-
-col_conversion_dict = {
-        "bool": to_bool,
-        "cat": to_cat,
-        "float": to_float,
-        "int": to_int
-    }
 
 class DataTransformer:
+    
+    def prepare_data(self, table, conversion_dict, cols_to_drop, nulls_to_drop, dates_to_clean):
+        self.convert_dtypes(table, conversion_dict)
+        self.drop_columns(table, cols_to_drop)
+        self.drop_nulls(table, nulls_to_drop)
+        self.clean_dates(table, dates_to_clean)
+        self.clean_funded_amount(table)
+        self.clean_term(table)
+        self.clean_int_rate(table)
+        self.clean_employment_length(table)
+        self.prep_for_corr(table)
+        return table
 
     def convert_to_bool(self, table, col):
         table[col] = table[col].astype("bool")
@@ -89,7 +86,7 @@ class DataTransformer:
             table[col] = table[col].astype("float64")
         return table     
 
-    def replace_funded_amount_nulls(self, table):
+    def clean_funded_amount(self, table):
         table["funded_amount"] = table["funded_amount"].fillna(table["loan_amount"])
         return table
     
@@ -126,24 +123,39 @@ class DataTransformer:
         return table
     
     def sqrt_transform(self, table):
+        sqrt_df = table.transform(np.sqrt)
+        return sqrt_df
+
+    def log_transform(self, table):
         for col in table.columns:
-            pass
+            table[col] = table[col].apply(lambda x: np.log(x) if x > 0 else 0)
+        return table
+    
+    def box_cox(self, table):
+        table += 0.01
+        table = table.astype("float64")
+        for col in table.columns:
+            transformed, _ = stats.boxcox(table[col])
+            table[col] = transformed
+        return table
+            
 
 
    
 
 
-transformer = DataTransformer()
-converted_loans_df = transformer.convert_dtypes(original_loans_df, col_conversion_dict)
-converted_loans_df = transformer.drop_columns(converted_loans_df, to_drop)
-converted_loans_df = transformer.replace_funded_amount_nulls(converted_loans_df)
-converted_loans_df = transformer.clean_term(converted_loans_df)
-converted_loans_df = transformer.clean_int_rate(converted_loans_df)
-converted_loans_df = transformer.clean_employment_length(converted_loans_df)
-converted_loans_df = transformer.drop_nulls(converted_loans_df, nulls_to_drop)
-converted_loans_df = transformer.clean_dates(converted_loans_df, dates_to_clean)
-converted_loans_df = transformer.prep_for_corr(converted_loans_df)
-
+# transformer = DataTransformer()
+# converted_loans_df = transformer.convert_dtypes(original_loans_df, col_conversion_dict)
+# converted_loans_df = transformer.drop_columns(converted_loans_df, to_drop)
+# converted_loans_df = transformer.clean_funded_amount(converted_loans_df)
+# converted_loans_df = transformer.clean_term(converted_loans_df)
+# converted_loans_df = transformer.clean_int_rate(converted_loans_df)
+# converted_loans_df = transformer.clean_employment_length(converted_loans_df)
+# converted_loans_df = transformer.drop_nulls(converted_loans_df, nulls_to_drop)
+# converted_loans_df = transformer.clean_dates(converted_loans_df, dates_to_clean)
+# converted_loans_df = transformer.prep_for_corr(converted_loans_df)
+# sqrt_transformation = transformer.sqrt_transform(skewed_columns)
+# print(sqrt_transformation.head(20))
 
 
 

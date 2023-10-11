@@ -1,10 +1,6 @@
-from data_transforms import converted_loans_df
-# from db_utils import original_loans_df
 import pandas as pd
 import numpy as np
 from scipy import stats
-
-loans_df = converted_loans_df
 
 class DataFrameInfo:
 
@@ -70,7 +66,7 @@ class DataFrameInfo:
         return skewed_cols
 
 
-info_getter = DataFrameInfo()
+# info_getter = DataFrameInfo()
 # info_getter.check_dtypes(loans_df)
 # info_getter.get_df_stats(loans_df)
 # info_getter.get_shape(loans_df)
@@ -81,8 +77,7 @@ info_getter = DataFrameInfo()
 # info_getter.get_categories(loans_df, "employment_length")
 # info_getter.pearson_df_correlation(loans_df)
 # info_getter.test_missing_at_random(loans_df, "last_payment_date", "loan_amount")
-skewed_columns = info_getter.identify_skewness(loans_df)
-print(skewed_columns.head())
+# skewed_columns = info_getter.identify_skewness(loans_df)
 
 
 
