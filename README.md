@@ -29,3 +29,12 @@ There are 7 null values in last_credit_pull date, or 0.01%. This column is corre
 There are 51 null values in collections_12_mths_ex_med, or 0.09%. The seaborn heatmap shows this column is not strongly correlated with any other, so the null rows were dropped. 
 
 ### Dealing with skewness
+
+pd.skew() was used to identify the skewness of each column in the dataframe. The skewed columns (defined as skew > 0.5) were transformed using a square root, log, and box-cox transformation to see which was the most effective. The effect of each transformation was also visualized using seaborn histplots. The most effective transformation for every column was Box Cox, which was therefore used to transform the entire dataframe, except the collections_12_mths_ex_med column, because the Box Cox transformation produced very large numbers that were unprocessable when trying to update the main dataframe. As a result a log transformation was used on this column. The id and member_id columns were also excluded from the transformation as they are specific numbers assigned to customers and should not be changed. 
+
+### Removing outliers
+
+A seaborn boxplot was used to visualize which columns might have outliers. Potential outliers were then investigated to see if they are part of natural variation, in which case they were retained, or if they are the result of error, in which case they were removed. Potential outliers were identified in recoveries and collection_recovery_fee, both of which had a few values well outside the whiskers in the boxplot. Using PGAdmin to view the original data for these columns was inconclusive - there are a few data points higher than the others, but not massively so. The two columns are strongly correlated with each other so a scatterplot was used to see if either of them contained any outliers in relation to each other. This suggested there were three outliers with very high values for recoveries compared to collection_recovery_fee. These values were therefore removed. 
+
+### Removing highly correlated columns
+A heatmap was used to identify highly correlated columns that could lead to overfitting. The threshold used was a correlation coefficient of 0.9. As a result, funded_amount, funded_amount_inv, and instalment were dropped as they are very highly correlated with loan_amount. Also removed were total_payment_inv and total_rec_prncp, which are very highly correlated with total_payment, and grade and sub_grade, which are very highly correlated with each other and with int_rate.

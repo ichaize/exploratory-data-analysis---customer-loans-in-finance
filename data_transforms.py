@@ -17,6 +17,7 @@ class DataTransformer:
         self.clean_term(table)
         self.clean_int_rate(table)
         self.clean_employment_length(table)
+        self.remove_outliers(table)
         self.prep_for_corr(table)
         return table
 
@@ -126,17 +127,21 @@ class DataTransformer:
         sqrt_df = table.transform(np.sqrt)
         return sqrt_df
 
-    def log_transform(self, table):
-        for col in table.columns:
-            table[col] = table[col].apply(lambda x: np.log(x) if x > 0 else 0)
+    def log_transform(self, table, col):
+        table[col] = table[col].apply(lambda x: np.log(x) if x > 0 else 0)
         return table
     
     def box_cox(self, table):
         table += 0.01
         table = table.astype("float64")
         for col in table.columns:
-            transformed, _ = stats.boxcox(table[col])
-            table[col] = transformed
+            if col != "collections_12_mths_ex_med" and col != "id" and col != "member_id":
+                transformed, _ = stats.boxcox(table[col])
+                table[col] = transformed
+        return table
+    
+    def remove_outliers(self, table):
+        table = table[table["recoveries"] < 22000]
         return table
             
 

@@ -61,7 +61,7 @@ class DataFrameInfo:
                 pass
         for key in skewed_dict:
             skewed_list.append(key)
-            print(f"{key}: {skewed_dict[key]}")    
+            # print(f"{key}: {skewed_dict[key]}")    
         skewed_cols = table[skewed_list]
         return skewed_cols
 

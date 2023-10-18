@@ -17,6 +17,7 @@ to_drop = ["mths_since_last_major_derog", "next_payment_date", "mths_since_last_
 dates_to_clean = ["last_payment_date", "issue_date", "earliest_credit_line", "last_credit_pull_date"]
 cat_cols = ["grade_cats", "home_ownership_cats", "verification_status_cats", "loan_status_cats", "purpose_cats", "sub_grade_cats"]
 nulls_to_drop = ["last_payment_date", "last_credit_pull_date", "collections_12_mths_ex_med"]
+correlated_to_drop = ["funded_amount", "funded_amount_inv", "instalment", "grade_cats", "sub_grade_cats", "total_payment_inv", "total_rec_prncp"]
 
 col_conversion_dict = {
         "bool": to_bool,
@@ -30,11 +31,18 @@ skewed_columns = info_getter.identify_skewness(cleaned_loans_df)
 # sqrt_df = transformer.sqrt_transform(skewed_columns)
 # log_df = transformer.log_transform(skewed_columns)
 box_coxed = transformer.box_cox(skewed_columns)
-cleaned_loans_df.update(box_coxed)
-print(cleaned_loans_df.head(20))
-# info_getter.identify_skewness(sqrt_df)
+transformed = transformer.log_transform(box_coxed, "collections_12_mths_ex_med")
+cleaned_loans_df.update(transformed)
+cleaned_loans_df = transformer.drop_columns(cleaned_loans_df, correlated_to_drop)
 
-# plotter.multiple_histograms(sqrt_df)
+plotter.heatmap(cleaned_loans_df)
+# smallest = cleaned_loans_df.nsmallest(10, "total_rec_late_fee")
+# print(smallest["total_rec_late_fee"])
+# cleaned_loans_df = transformer.remove_min_value(cleaned_loans_df, min_value_outliers)
+# plotter.view_boxplot(cleaned_loans_df, "loan_amount")
+
+# small_loans = cleaned_loans_df[cleaned_loans_df["loan_amount"] < 24]
+
 
 # zeroes = (skewed_columns > 0).sum().sum()
 

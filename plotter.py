@@ -28,6 +28,12 @@ class Plotter:
             sns.histplot(table[col])
         plt.show()
 
+    def multiple_boxplots(self, table):
+        for i, col in enumerate(table.columns, 1):
+            plt.subplot(4, 11, i)
+            sns.boxplot(table[col])
+        plt.show()
+
     def scatterplot(self, table, col1, col2):
         sns.scatterplot(data=table, x=col1, y=col2)
         plt.show()
